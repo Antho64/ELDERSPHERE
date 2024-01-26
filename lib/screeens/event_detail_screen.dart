@@ -1,85 +1,189 @@
-import 'package:flutter/material.dart';
-import 'package:eldersphere/models/event.dart';
+// ignore_for_file: library_private_types_in_public_api
 
-class EventDetailScreen extends StatelessWidget {
+import 'package:flutter/material.dart';
+import '../models/event.dart';
+
+class EventDetailScreen extends StatefulWidget {
   final Event event;
 
-  EventDetailScreen({required this.event});
+  const EventDetailScreen({required this.event, required String contactName});
+
+  @override
+  _EventDetailScreenState createState() => _EventDetailScreenState();
+}
+
+class _EventDetailScreenState extends State<EventDetailScreen> {
+  bool isRSVPed = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Event Details',
-          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 255, 255, 255)),
         ),
-        backgroundColor: Colors.indigo,
+        backgroundColor: Colors.black87,
       ),
       body: Container(
-        color: Colors.grey[900], // Darker background color for the body
+        color: Colors.cyan, // Darker background color for the body
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Hero(
-              tag: 'event_title_${event.title}',
-              child: Container(
-                padding: EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.indigo,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  event.title,
-                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            FadeIn(
-              child: Text(
-                event.description,
-                style: TextStyle(fontSize: 18, color: Colors.white),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Row(
+        child: Card(
+          elevation: 5,
+          color: const Color.fromARGB(255, 82, 82, 82),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.calendar_today, color: Colors.indigo, size: 18),
-                SizedBox(width: 8),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Date:',
-                      style: TextStyle(fontSize: 18, color: Colors.white),
+                Hero(
+                  tag: 'event_title_${widget.event.title}',
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.cyan,
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    Text(
-                      '${event.dateTime.toLocal().toLocal()}',
-                      style: TextStyle(fontSize: 18, color: Colors.white),
+                    child: Text(
+                      widget.event.title,
+                      style:const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                FadeIn(
+                  child: Text(
+                    widget.event.description,
+                    style:const TextStyle(fontSize: 20, color: Color.fromARGB(255, 255, 255, 255)),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    const Icon(Icons.calendar_today, color: Color.fromARGB(255, 255, 99, 99), size: 22),
+                    const SizedBox(width: 8),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Date & Time:',
+                          style: TextStyle(fontSize: 18, color: Color.fromARGB(255, 255, 255, 255)),
+                        ),
+                        Text(
+                          '${_formatEventDate(widget.event.dateTime)} at ${_formatEventTime(widget.event.dateTime)}',
+                          style:const TextStyle(fontSize: 18, color: Color.fromARGB(255, 255, 255, 255)),
+                        ),
+                      ],
                     ),
                   ],
                 ),
+                const SizedBox(height: 20),
+                // Additional details or actions
+                _buildAdditionalDetails(),
+                const SizedBox(height: 20),
+                // RSVP Button
+                _buildRSVPButton(),
               ],
             ),
-            const SizedBox(height: 30),
-            // You can add more widgets here to display additional information or actions
-            FadeIn(
-              child: ElevatedButton(
-                onPressed: () {
-                  // Add any action you want to perform
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: Colors.indigo,
-                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12), // Adjust button padding
-                ),
-                child: Text('RSVP', style: TextStyle(fontSize: 16, color: Colors.white)),
-              ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _formatEventDate(DateTime dateTime) {
+    return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
+  }
+
+  String _formatEventTime(DateTime dateTime) {
+    return '${dateTime.hour}:${dateTime.minute}';
+  }
+
+  Widget _buildAdditionalDetails() {
+    return const Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(height: 10),
+        Row(
+          children:  [
+            Icon(Icons.location_on, color: Color.fromARGB(255, 255, 99, 99), size: 22),
+            SizedBox(width: 8),
+            Text(
+              'Location:',
+              style: TextStyle(fontSize: 18, color: Color.fromARGB(255, 255, 255, 255)),
+            ),
+            SizedBox(width: 8),
+            Text(
+              'Event Center XYZ',
+              style: TextStyle(fontSize: 18, color: Color.fromARGB(255, 255, 255, 255)),
             ),
           ],
         ),
+        SizedBox(height: 10),
+        Row(
+          children: [
+            Icon(Icons.people, color: Color.fromARGB(255, 255, 99, 99), size: 22),
+            SizedBox(width: 8),
+            Text(
+              'Organizer:',
+              style: TextStyle(fontSize: 18, color: Color.fromARGB(255, 255, 255, 255)),
+            ),
+            SizedBox(width: 8),
+            Text(
+              'Event Organizer ABC',
+              style: TextStyle(fontSize: 18, color: Color.fromARGB(255, 255, 255, 255)),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRSVPButton() {
+    return FadeIn(
+      child: ElevatedButton(
+        onPressed: () {
+          setState(() {
+            isRSVPed = !isRSVPed;
+          });
+          _showConfirmationMessage();
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: isRSVPed ? Colors.green : const Color.fromARGB(255, 172, 112, 255),
+          padding:const EdgeInsets.symmetric(vertical: 12, horizontal: 16), // Adjust button padding
+        ),
+        child: Text(
+          isRSVPed ? 'RSVPed' : 'RSVP',
+          style:const TextStyle(fontSize: 18, color: Colors.white),
+        ),
       ),
+    );
+  }
+
+  void _showConfirmationMessage() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title:const Text('RSVP Confirmation'),
+          content: Text(
+            isRSVPed
+                ? 'You have successfully RSVPed for ${widget.event.title}. Enjoy the event!'
+                : 'You have canceled your RSVP for ${widget.event.title}.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child:const Text('OK'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
@@ -87,7 +191,7 @@ class EventDetailScreen extends StatelessWidget {
 class FadeIn extends StatefulWidget {
   final Widget child;
 
-  FadeIn({required this.child});
+  const FadeIn({required this.child});
 
   @override
   _FadeInState createState() => _FadeInState();

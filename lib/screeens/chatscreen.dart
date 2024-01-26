@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ChatScreen extends StatefulWidget {
+  const ChatScreen({Key? key}) : super(key: key);
+
   @override
   _ChatScreenState createState() => _ChatScreenState();
 }
@@ -9,7 +11,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final List<ChatMessage> _messages = [];
   final List<String> _users = ['User 1', 'User 2', 'User 3']; // Add more users as needed
   late String _selectedUser;
-  TextEditingController _textController = TextEditingController();
+  final TextEditingController _textController = TextEditingController();
 
   @override
   void initState() {
@@ -22,23 +24,39 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Chat ($_selectedUser)'),
-        backgroundColor: Colors.indigo,
+        backgroundColor: Colors.black87,
         actions: [
           _buildUserDropdown(),
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: () {
+              // Add settings functionality
+            },
+          ),
         ],
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: _messages.length,
-              itemBuilder: (context, index) {
-                return _messages[index];
-              },
-            ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.grey[900]!, Colors.grey[800]!],
           ),
-          _buildInputField(),
-        ],
+        ),
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                reverse: true, // Display messages in reverse order
+                itemCount: _messages.length,
+                itemBuilder: (context, index) {
+                  return _messages[index];
+                },
+              ),
+            ),
+            _buildInputField(),
+          ],
+        ),
       ),
     );
   }
@@ -62,16 +80,34 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _buildInputField() {
     return Container(
-      padding: EdgeInsets.all(8.0),
-      color: Colors.grey[800],
+      padding: const EdgeInsets.all(8.0),
+      color: Colors.transparent,
       child: Row(
         children: [
+          IconButton(
+            icon: Icon(Icons.image, color: Colors.cyan),
+            onPressed: () {
+              // Add image picker functionality
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.videocam, color: Colors.cyan),
+            onPressed: () {
+              // TODO: Implement video call logic
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.phone, color: Colors.cyan),
+            onPressed: () {
+              // TODO: Implement voice call logic
+            },
+          ),
           Expanded(
             child: TextField(
               controller: _textController,
               textInputAction: TextInputAction.send,
               onSubmitted: _handleSubmitted,
-              style: TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 hintText: 'Type a message...',
                 hintStyle: TextStyle(color: Colors.grey[400]),
@@ -80,18 +116,17 @@ class _ChatScreenState extends State<ChatScreen> {
                   borderSide: BorderSide.none,
                 ),
                 filled: true,
-                fillColor: Colors.grey[700],
-                contentPadding: EdgeInsets.all(12.0),
+                fillColor: Colors.grey[700]!.withOpacity(0.5),
+                contentPadding: const EdgeInsets.all(12.0),
               ),
             ),
           ),
-          SizedBox(width: 8.0),
+          const SizedBox(width: 8.0),
           IconButton(
-            icon: Icon(Icons.send),
+            icon: Icon(Icons.send, color: Colors.cyan),
             onPressed: () {
               _handleSubmitted(_textController.text);
             },
-            color: Colors.indigo,
           ),
         ],
       ),
@@ -108,7 +143,20 @@ class _ChatScreenState extends State<ChatScreen> {
       setState(() {
         _messages.insert(0, message);
       });
+      _simulateBotReply(); // Simulate a reply from the bot
     }
+  }
+
+  void _simulateBotReply() {
+    Future.delayed(const Duration(seconds: 1), () {
+      ChatMessage botReply = ChatMessage(
+        text: 'Hello, $_selectedUser',
+        isUser: false,
+      );
+      setState(() {
+        _messages.insert(0, botReply);
+      });
+    });
   }
 }
 
@@ -116,22 +164,23 @@ class ChatMessage extends StatelessWidget {
   final String text;
   final bool isUser;
 
-  ChatMessage({required this.text, required this.isUser});
+  const ChatMessage({Key? key, required this.text, required this.isUser})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
-        padding: EdgeInsets.all(12.0),
+        padding: const EdgeInsets.all(12.0),
         decoration: BoxDecoration(
           color: isUser ? Colors.indigo : Colors.grey[700],
           borderRadius: BorderRadius.circular(12.0),
         ),
         child: Text(
           text,
-          style: TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white),
         ),
       ),
     );
@@ -139,7 +188,7 @@ class ChatMessage extends StatelessWidget {
 }
 
 void main() {
-  runApp(MaterialApp(
+  runApp(const MaterialApp(
     home: ChatScreen(),
   ));
 }
